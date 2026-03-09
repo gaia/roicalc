@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Performance Imobiliária</title>
+  <meta name="description" content="Simule a performance da sua imobiliária com campanhas de marketing">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: hsl(45 25% 96%);
+      --fg: hsl(233 29% 26%);
+      --card: hsl(0 0% 100%);
+      --card-border: hsl(233 15% 85%);
+      --muted: hsl(233 15% 55%);
+      --accent: hsl(233 35% 35%);
+      --accent-light: hsl(233 30% 94%);
+      --input-bg: hsl(45 20% 97%);
+      --input-border: hsl(233 15% 80%);
+      --success: hsl(160 84% 30%);
+      --success-bg: hsl(160 40% 94%);
+      --warn: hsl(35 90% 50%);
+      --warn-bg: hsl(35 80% 95%);
+      --danger: hsl(0 70% 55%);
+      --danger-bg: hsl(0 60% 96%);
+      --gradient-start: hsl(233 29% 26%);
+      --gradient-end: hsl(233 35% 40%);
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-lg: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    .logo-bar {
+      display: flex;
+      justify-content: center;
+      padding: 0 0 24px;
+    }
+    .logo-bar img { height: 36px; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+    .field:last-child { margin-bottom: 0; }
+
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .field label .val {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--input-border);
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--card);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      cursor: pointer;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--card);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      cursor: pointer;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 768px) {
+      .results-grid { grid-template-columns: 1fr; }
+    }
+
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .result-card.highlight {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: var(--shadow-lg);
+    }
+    .result-card.highlight .result-label { color: rgba(255,255,255,0.7); }
+    .result-card.highlight .result-value { color: #fff; }
+
+    .result-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .result-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+    .result-sub {
+      font-size: 0.75rem;
+      margin-top: 2px;
+      opacity: 0.7;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .results-section {
+      margin-top: 32px;
+    }
+    .results-section .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .funnel-bar {
+      margin-top: 32px;
+    }
+    .funnel-steps {
+      display: flex;
+      gap: 2px;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .funnel-step {
+      flex: 1;
+      padding: 14px 12px;
+      text-align: center;
+      position: relative;
+      min-width: 0;
+    }
+    .funnel-step:nth-child(1) { background: var(--accent); color: #fff; }
+    .funnel-step:nth-child(2) { background: hsl(233 30% 45%); color: #fff; }
+    .funnel-step:nth-child(3) { background: hsl(233 25% 55%); color: #fff; }
+    .funnel-step:nth-child(4) { background: hsl(233 20% 65%); color: #fff; }
+    .funnel-step:nth-child(5) { background: hsl(233 15% 75%); color: var(--fg); }
+    .funnel-step:nth-child(6) { background: hsl(160 50% 40%); color: #fff; }
+
+    .funnel-step .funnel-num {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: block;
+    }
+    .funnel-step .funnel-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      opacity: 0.85;
+      display: block;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .funnel-step .funnel-pct {
+      font-size: 0.6rem;
+      opacity: 0.65;
+      display: block;
+      margin-top: 1px;
+    }
+
+    .capacity-alert {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: none;
+    }
+    .capacity-alert.warn {
+      background: var(--warn-bg);
+      color: hsl(35 80% 30%);
+      display: block;
+    }
+    .capacity-alert.danger {
+      background: var(--danger-bg);
+      color: hsl(0 60% 40%);
+      display: block;
+    }
+
+    .channel-split {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .channel-badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .separator {
+      height: 1px;
+      background: var(--card-border);
+      margin: 20px 0;
+    }
+
+    .tooltip-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: help;
+    }
+    .tooltip-wrap .tip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--input-border);
+      color: var(--muted);
+      font-size: 0.6rem;
+      font-weight: 700;
+    }
+    .tooltip-wrap:hover .tip-text {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .tip-text {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: var(--fg);
+      color: var(--bg);
+      font-size: 0.72rem;
+      font-weight: 400;
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s, transform 0.15s;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+<div class="logo-bar">
+  <img src="https://zozo.homes/assets/zozo-azul-BRdoiwDh.svg" alt="Zozo">
+</div>
+
+<div class="container">
+  <div class="header">
+    <h1>Calculadora de Performance Imobiliária</h1>
+    <p>Simule a performance da sua imobiliária com campanhas Meta & Google Ads</p>
+  </div>
+
+  <div class="grid">
+    <!-- INVESTIMENTO & CANAIS -->
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:var(--accent-light);color:var(--accent);">$</span> Investimento & Canais</div>
+
+      <div class="field">
+        <label>Investimento em marketing <span class="val" id="v-investimento">R$ 15.000</span></label>
+        <input type="range" id="investimento" min="1000" max="100000" step="500" value="15000">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Split Meta vs Google (%)
+            <span class="tip-icon">?</span>
+            <span class="tip-text">% do budget alocado para Meta Ads</span>
+          </span>
+          <span class="val" id="v-split">70% Meta / 30% Google</span>
+        </label>
+        <input type="range" id="split" min="0" max="100" step="5" value="70">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">CPL Meta Ads
+            <span class="tip-icon">?</span>
+            <span class="tip-text">Custo por lead nas campanhas Meta</span>
+          </span>
+          <span class="val" id="v-cplMeta">R$ 65</span>
+        </label>
+        <input type="range" id="cplMeta" min="5" max="300" step="1" value="65">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">CPL Google Ads
+            <span class="tip-icon">?</span>
+            <span class="tip-text">Custo por lead nas campanhas Google</span>
+          </span>
+          <span class="val" id="v-cplGoogle">R$ 120</span>
+        </label>
+        <input type="range" id="cplGoogle" min="5" max="500" step="1" value="120">
+      </div>
+
+      <div class="separator"></div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">CPC médio
+            <span class="tip-icon">?</span>
+            <span class="tip-text">Custo por clique (referência)</span>
+          </span>
+          <span class="val" id="v-cpc">R$ 3,50</span>
+        </label>
+        <input type="range" id="cpc" min="0.5" max="20" step="0.1" value="3.5">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Conversão da landing page (%)
+            <span class="tip-icon">?</span>
+            <span class="tip-text">% de cliques que viram leads</span>
+          </span>
+          <span class="val" id="v-lpConv">5%</span>
+        </label>
+        <input type="range" id="lpConv" min="1" max="30" step="0.5" value="5">
+      </div>
+    </div>
+
+    <!-- FUNIL COMERCIAL -->
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:var(--accent-light);color:var(--accent);">⬇</span> Funil Comercial</div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Taxa de agendamento (%)
+            <span class="tip-icon">?</span>
+            <span class="tip-text">% de leads que agendam visita</span>
+          </span>
+          <span class="val" id="v-agendamento">20%</span>
+        </label>
+        <input type="range" id="agendamento" min="0" max="100" step="1" value="20">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Taxa de no-show (%)
+            <span class="tip-icon">?</span>
+            <span class="tip-text">% de agendamentos que não comparecem</span>
+          </span>
+          <span class="val" id="v-noshow">25%</span>
+        </label>
+        <input type="range" id="noshow" min="0" max="80" step="1" value="25">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Conversão visita → venda (%)
+            <span class="tip-icon">?</span>
+            <span class="tip-text">% das visitas realizadas que fecham</span>
+          </span>
+          <span class="val" id="v-conversao">5%</span>
+        </label>
+        <input type="range" id="conversao" min="0" max="50" step="0.5" value="5">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Ciclo de venda (dias)
+            <span class="tip-icon">?</span>
+            <span class="tip-text">Tempo médio do lead ao fechamento</span>
+          </span>
+          <span class="val" id="v-ciclo">45 dias</span>
+        </label>
+        <input type="range" id="ciclo" min="7" max="180" step="1" value="45">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Taxa de distrato (%)
+            <span class="tip-icon">?</span>
+            <span class="tip-text">% de vendas canceladas após fechamento</span>
+          </span>
+          <span class="val" id="v-distrato">8%</span>
+        </label>
+        <input type="range" id="distrato" min="0" max="30" step="1" value="8">
+      </div>
+    </div>
+
+    <!-- PRODUTO -->
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:var(--accent-light);color:var(--accent);">🏢</span> Produto</div>
+
+      <div class="field">
+        <label>Ticket médio do imóvel <span class="val" id="v-ticket">R$ 500.000</span></label>
+        <input type="range" id="ticket" min="50000" max="10000000" step="10000" value="500000">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Mix de produto (peso alto padrão %)
+            <span class="tip-icon">?</span>
+            <span class="tip-text">0% = só econômico, 100% = só alto padrão. Ajusta ticket médio efetivo.</span>
+          </span>
+          <span class="val" id="v-mix">50%</span>
+        </label>
+        <input type="range" id="mix" min="0" max="100" step="5" value="50">
+      </div>
+    </div>
+
+    <!-- EQUIPE & COMISSÃO -->
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:var(--accent-light);color:var(--accent);">👥</span> Equipe & Comissão</div>
+
+      <div class="field">
+        <label>Número de corretores <span class="val" id="v-corretores">5</span></label>
+        <input type="range" id="corretores" min="1" max="50" step="1" value="5">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Custo fixo equipe comercial
+            <span class="tip-icon">?</span>
+            <span class="tip-text">Salários, CRM, ferramentas (mensal)</span>
+          </span>
+          <span class="val" id="v-custoEquipe">R$ 25.000</span>
+        </label>
+        <input type="range" id="custoEquipe" min="0" max="200000" step="1000" value="25000">
+      </div>
+
+      <div class="field">
+        <label>Comissão total (%) <span class="val" id="v-comissao">5%</span></label>
+        <input type="range" id="comissao" min="0" max="10" step="0.1" value="5">
+      </div>
+
+      <div class="field">
+        <label>
+          <span class="tooltip-wrap">Split imobiliária vs corretor (%)
+            <span class="tip-icon">?</span>
+            <span class="tip-text">% da comissão que fica com a imobiliária</span>
+          </span>
+          <span class="val" id="v-splitComissao">60% imob / 40% corretor</span>
+        </label>
+        <input type="range" id="splitComissao" min="0" max="100" step="5" value="60">
+      </div>
+    </div>
+  </div>
+
+  <!-- FUNNEL VISUALIZATION -->
+  <div class="funnel-bar">
+    <div class="card-title"><span class="icon" style="background:var(--accent-light);color:var(--accent);">📊</span> Funil de Conversão</div>
+    <div class="funnel-steps" id="funnel"></div>
+    <div class="channel-split" id="channelSplit"></div>
+    <div class="capacity-alert" id="capacityAlert"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-section">
+    <div class="section-title">📈 Resultados Projetados</div>
+    <div class="results-grid" id="results"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const $ = id => document.getElementById(id);
+
+  const fmt = n => n.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+  const fmtCur = n => 'R$ ' + n.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+  const fmtDec = (n, d=1) => n.toLocaleString('pt-BR', {minimumFractionDigits: d, maximumFractionDigits: d});
+  const fmtPct = (n, d=0) => n.toLocaleString('pt-BR', {minimumFractionDigits: d, maximumFractionDigits: d}) + '%';
+
+  const inputs = [
+    'investimento','split','cplMeta','cplGoogle','cpc','lpConv',
+    'agendamento','noshow','conversao','ciclo','distrato',
+    'ticket','mix','corretores','custoEquipe','comissao','splitComissao'
+  ];
+
+  function update() {
+    const investimento = +$('investimento').value;
+    const splitMeta = +$('split').value / 100;
+    const splitGoogle = 1 - splitMeta;
+    const cplMeta = +$('cplMeta').value;
+    const cplGoogle = +$('cplGoogle').value;
+    const cpc = +$('cpc').value;
+    const lpConv = +$('lpConv').value / 100;
+    const agendamento = +$('agendamento').value / 100;
+    const noshow = +$('noshow').value / 100;
+    const conversao = +$('conversao').value / 100;
+    const ciclo = +$('ciclo').value;
+    const distrato = +$('distrato').value / 100;
+    const ticket = +$('ticket').value;
+    const mix = +$('mix').value / 100;
+    const corretores = +$('corretores').value;
+    const custoEquipe = +$('custoEquipe').value;
+    const comissaoPct = +$('comissao').value / 100;
+    const splitImob = +$('splitComissao').value / 100;
+
+    // Budget split
+    const budgetMeta = investimento * splitMeta;
+    const budgetGoogle = investimento * splitGoogle;
+
+    // Leads by channel
+    const leadsMeta = cplMeta > 0 ? budgetMeta / cplMeta : 0;
+    const leadsGoogle = cplGoogle > 0 ? budgetGoogle / cplGoogle : 0;
+    const totalLeads = leadsMeta + leadsGoogle;
+
+    // Blended CPL
+    const cplBlended = totalLeads > 0 ? investimento / totalLeads : 0;
+
+    // CPC reference: implied leads from CPC + LP conversion
+    const clicksFromBudget = cpc > 0 ? investimento / cpc : 0;
+    const impliedLeadsFromCPC = clicksFromBudget * lpConv;
+
+    // Funnel
+    const agendamentos = totalLeads * agendamento;
+    const visitasRealizadas = agendamentos * (1 - noshow);
+    const vendasBrutas = visitasRealizadas * conversao;
+    const vendasLiquidas = vendasBrutas * (1 - distrato);
+
+    // Ticket with mix adjustment (econômico = 60% of ticket, alto padrão = 140%)
+    const ticketEfetivo = ticket * (0.6 + 0.8 * mix);
+
+    // Revenue
+    const vgvBruto = vendasBrutas * ticketEfetivo;
+    const vgvLiquido = vendasLiquidas * ticketEfetivo;
+
+    // Comissão
+    const comissaoBruta = vgvLiquido * comissaoPct;
+    const comissaoImob = comissaoBruta * splitImob;
+    const comissaoCorretores = comissaoBruta * (1 - splitImob);
+
+    // Custos totais
+    const custoTotal = investimento + custoEquipe;
+
+    // ROI & ROAS (sobre comissão da imobiliária)
+    const roiImob = custoTotal > 0 ? ((comissaoImob - custoTotal) / custoTotal) * 100 : 0;
+    const roas = investimento > 0 ? vgvLiquido / investimento : 0;
+
+    // CAC
+    const cac = vendasLiquidas > 0 ? custoTotal / vendasLiquidas : 0;
+
+    // Capacity
+    const leadsPerCorretor = corretores > 0 ? totalLeads / corretores : totalLeads;
+
+    // Ciclo adjustment note
+    const mesesCiclo = ciclo / 30;
+
+    // Update displayed values
+    $('v-investimento').textContent = fmtCur(investimento);
+    $('v-split').textContent = Math.round(splitMeta*100) + '% Meta / ' + Math.round(splitGoogle*100) + '% Google';
+    $('v-cplMeta').textContent = fmtCur(cplMeta);
+    $('v-cplGoogle').textContent = fmtCur(cplGoogle);
+    $('v-cpc').textContent = 'R$ ' + fmtDec(cpc, 2);
+    $('v-lpConv').textContent = fmtPct(+$('lpConv').value);
+    $('v-agendamento').textContent = fmtPct(+$('agendamento').value);
+    $('v-noshow').textContent = fmtPct(+$('noshow').value);
+    $('v-conversao').textContent = fmtPct(+$('conversao').value);
+    $('v-ciclo').textContent = ciclo + ' dias';
+    $('v-distrato').textContent = fmtPct(+$('distrato').value);
+    $('v-ticket').textContent = fmtCur(ticket);
+    $('v-mix').textContent = fmtPct(+$('mix').value);
+    $('v-corretores').textContent = corretores;
+    $('v-custoEquipe').textContent = fmtCur(custoEquipe);
+    $('v-comissao').textContent = fmtPct(+$('comissao').value, 1);
+    $('v-splitComissao').textContent = Math.round(splitImob*100) + '% imob / ' + Math.round((1-splitImob)*100) + '% corretor';
+
+    // Funnel
+    $('funnel').innerHTML = [
+      {n: fmt(Math.round(totalLeads)), l: 'Leads', p: ''},
+      {n: fmt(Math.round(agendamentos)), l: 'Agendamentos', p: fmtPct(agendamento*100)},
+      {n: fmt(Math.round(visitasRealizadas)), l: 'Visitas', p: fmtPct((1-noshow)*100) + ' comparecem'},
+      {n: fmtDec(vendasBrutas, 1), l: 'Vendas brutas', p: fmtPct(conversao*100) + ' conversão'},
+      {n: fmtDec(vendasLiquidas, 1), l: 'Vendas líquidas', p: '-' + fmtPct(distrato*100) + ' distrato'},
+      {n: fmtCur(vgvLiquido), l: 'VGV líquido', p: ''}
+    ].map(s => `<div class="funnel-step"><span class="funnel-num">${s.n}</span><span class="funnel-label">${s.l}</span><span class="funnel-pct">${s.p}</span></div>`).join('');
+
+    // Channel split badges
+    $('channelSplit').innerHTML =
+      `<span class="channel-badge">Meta: ${fmt(Math.round(leadsMeta))} leads · CPL ${fmtCur(cplMeta)}</span>` +
+      `<span class="channel-badge">Google: ${fmt(Math.round(leadsGoogle))} leads · CPL ${fmtCur(cplGoogle)}</span>` +
+      `<span class="channel-badge">CPL blended: ${fmtCur(Math.round(cplBlended))}</span>`;
+
+    // Capacity alert
+    const alert = $('capacityAlert');
+    if (leadsPerCorretor > 80) {
+      alert.className = 'capacity-alert danger';
+      alert.textContent = `⚠ Cada corretor receberia ${fmt(Math.round(leadsPerCorretor))} leads/mês. Capacidade comprometida — considere ampliar a equipe.`;
+    } else if (leadsPerCorretor > 40) {
+      alert.className = 'capacity-alert warn';
+      alert.textContent = `⚡ Cada corretor receberia ${fmt(Math.round(leadsPerCorretor))} leads/mês. Atenção à capacidade de atendimento.`;
+    } else {
+      alert.className = 'capacity-alert';
+    }
+
+    // Results
+    const results = [
+      {label: 'VGV Líquido', value: fmtCur(vgvLiquido), highlight: true},
+      {label: 'Comissão Bruta', value: fmtCur(comissaoBruta), highlight: true},
+      {label: 'Comissão Imobiliária', value: fmtCur(comissaoImob), sub: fmtPct(splitImob*100) + ' da comissão'},
+      {label: 'Comissão Corretores', value: fmtCur(comissaoCorretores), sub: corretores > 0 ? fmtCur(comissaoCorretores / corretores) + '/corretor' : ''},
+      {label: 'ROI da Imobiliária', value: fmtDec(roiImob) + '%', sub: 'sobre custo total (mkt + equipe)'},
+      {label: 'ROAS', value: fmtDec(roas, 1) + 'x', sub: 'VGV / investimento'},
+      {label: 'CAC', value: fmtCur(cac), sub: 'custo total / venda líquida'},
+      {label: 'Leads por Corretor', value: fmt(Math.round(leadsPerCorretor)) + '/mês', sub: corretores + ' corretores'},
+      {label: 'Ticket Efetivo', value: fmtCur(ticketEfetivo), sub: 'ajustado pelo mix'},
+      {label: 'Custo Total Mensal', value: fmtCur(custoTotal), sub: 'marketing + equipe'},
+      {label: 'Ciclo de Venda', value: ciclo + ' dias', sub: '~' + fmtDec(mesesCiclo) + ' meses'},
+      {label: 'Leads via CPC (ref)', value: fmt(Math.round(impliedLeadsFromCPC)), sub: 'se ' + fmtPct(+$('lpConv').value) + ' LP conv · CPC ' + 'R$ ' + fmtDec(cpc,2)},
+    ];
+
+    $('results').innerHTML = results.map(r =>
+      `<div class="result-card${r.highlight ? ' highlight' : ''}">
+        <div class="result-label">${r.label}</div>
+        <div class="result-value">${r.value}</div>
+        ${r.sub ? `<div class="result-sub">${r.sub}</div>` : ''}
+      </div>`
+    ).join('');
+  }
+
+  inputs.forEach(id => $(id).addEventListener('input', update));
+  update();
+})();
+</script>
+</body>
+</html>
